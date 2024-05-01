@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 const fileSchema = z.object({
   name: z.string(),
@@ -48,10 +48,15 @@ function MainPage() {
   const [error, setError] = useState<string | null>(null);
   const [processMax, setProcessMax] = useState<number>(100);
   const [processValue, setProcessValue] = useState<number>(0);
+  const [uploadedSize, setUploadedSize] = useState<number>(0);
+
+  useEffect(() => {
+    setProcessValue(uploadedSize);
+    console.log("rendered", processValue);
+  }, [uploadedSize, processValue]);
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files && e.target.files[0];
-    console.log(selectedFile?.type);
 
     if (selectedFile) {
       const fileValidation = fileSchema.safeParse(selectedFile);
@@ -65,7 +70,35 @@ function MainPage() {
     }
   }
 
-  let uploadedSize = 0;
+  async function uploadFileChunk(file: File, fileName: string, start: number) {
+    const chunk = file.slice(start, start + 64 * 1024);
+    if (file.type !== "video/mp4" && file.type !== "image/jpeg") return;
+    const formData = createFormData({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      fileName: fileName,
+      uploadedSize: start,
+      file: chunk,
+    });
+
+    try {
+      const uploadedResult = await axios.post(
+        "http://localhost:3000/api/upload",
+        formData
+      );
+      console.log(uploadedResult, "--uploadedResult");
+      setUploadedSize((prevSize) => prevSize + chunk.size);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("An error occurred while uploading the file");
+      return;
+    }
+
+    if (start + chunk.size < file.size) {
+      await uploadFileChunk(file, fileName, start + chunk.size);
+    }
+  }
 
   async function handleUpload() {
     if (!file) {
@@ -76,37 +109,9 @@ function MainPage() {
       const { name, size, type } = file;
       const fileName = new Date().getTime() + "_" + name;
 
-      let uploadedResult = null;
       setProcessMax(size);
 
-      while (uploadedSize < size) {
-        const fileChunk = file.slice(uploadedSize, uploadedSize + 64 * 1024);
-
-        const formData = createFormData({
-          name,
-          type,
-          size,
-          fileName,
-          uploadedSize,
-          file: fileChunk,
-        });
-
-        try {
-          uploadedResult = await axios.post(
-            "http://localhost:3000/api/upload",
-            formData
-          );
-
-          console.log(uploadedResult);
-        } catch (error) {
-          console.error("Error uploading file:", error);
-          alert("An error occurred while uploading the file");
-          return;
-        }
-
-        uploadedSize += fileChunk.size;
-        setProcessValue(uploadedSize);
-      }
+      await uploadFileChunk(file, fileName, 0);
 
       alert("Uploaded successfully!");
       setProcessValue(0);
@@ -116,7 +121,7 @@ function MainPage() {
 
   return (
     <div className="container mx-auto w-full max-w-sm items-center space-y-8 mt-8">
-      <Progress value={33} max={processMax} />
+      {processValue > 0 && <Progress value={processValue} max={processMax} />}
 
       <div className="grid w-full max-w-sm items-center gap-4">
         <Label htmlFor="video">Upload Video</Label>
