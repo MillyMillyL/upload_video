@@ -81,7 +81,7 @@ function MainPage() {
 
     try {
       const uploadedResult = await axios.post("/api/upload", formData);
-      // console.log(uploadedResult, "--uploadedResult");
+      console.log(uploadedResult, "--uploadedResult");
       setUploadedSize((prevSize) => prevSize + chunk.size);
     } catch (error) {
       console.error("Error uploading file:", error);

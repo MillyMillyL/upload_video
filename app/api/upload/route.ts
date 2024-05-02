@@ -40,14 +40,12 @@ export async function POST(req: NextRequest) {
       }
 
       appendFileSync(filePath, Buffer.from(fileData));
-      console.log("appended");
+
       return NextResponse.json({
         message: "Appended",
         video_url: "http://localhost:3000/" + fileName,
       });
     }
-
-    console.log("Uploaded file size is 0, gonna write the file");
     writeFileSync(filePath, Buffer.from(fileData));
     return NextResponse.json({ message: "File is created" });
   } catch (e) {
