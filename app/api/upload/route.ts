@@ -49,6 +49,6 @@ export async function POST(req: NextRequest) {
     writeFileSync(filePath, Buffer.from(fileData));
     return NextResponse.json({ message: "File is created" });
   } catch (error) {
-    return NextResponse.json({ error, message: "Final catch error" });
+    return NextResponse.json({ code: "500", message: "Internal Server Error" });
   }
 }
