@@ -3,10 +3,10 @@ import { z } from "zod";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 import { unstable_noStore as noStore } from "next/cache";
-import { Progress } from "@/components/ui/Progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Progress } from "../components/ui/Progress";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Button } from "../components/ui/button";
 
 const fileSchema = z.object({
   name: z.string(),
@@ -50,15 +50,7 @@ function MainPage() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [processMax, setProcessMax] = useState<number>(100);
-  // const [processValue, setProcessValue] = useState<number>(0);
   const [uploadedSize, setUploadedSize] = useState<number>(0);
-
-  // useEffect(() => {
-  //   setProcessValue(uploadedSize);
-
-  // }, [uploadedSize, processValue]);
-
-  console.log("rendered", uploadedSize, processMax);
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files && e.target.files[0];
@@ -115,10 +107,7 @@ function MainPage() {
 
       await uploadFileChunk(file, fileName, 0);
 
-      // alert("Uploaded successfully!");
       setFile(null);
-      // setProcessValue(0);
-      // setProcessMax(100);
       return;
     }
   }
