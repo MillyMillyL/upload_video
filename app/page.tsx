@@ -3,10 +3,10 @@ import { z } from "zod";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 import { unstable_noStore as noStore } from "next/cache";
-import { Progress } from "../components/ui/Progress";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Button } from "../components/ui/button";
+import { Progress } from "./components/ui/Progress";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
+import { Button } from "./components/ui/button";
 
 const fileSchema = z.object({
   name: z.string(),
