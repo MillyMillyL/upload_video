@@ -1,7 +1,7 @@
 // import type { NextApiRequest, NextApiResponse } from "next";
 import { appendFileSync, existsSync, writeFileSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
-import { resolve } from "path";
+import { join, resolve } from "path";
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const filePath = resolve(__dirname + fileName);
+  const filePath = join("D:/upload/", fileName as string);
 
   console.log(
     uploadedSize,

@@ -3,7 +3,7 @@ import { z } from "zod";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 import { unstable_noStore as noStore } from "next/cache";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@/components/ui/Progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -50,13 +50,15 @@ function MainPage() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [processMax, setProcessMax] = useState<number>(100);
-  const [processValue, setProcessValue] = useState<number>(0);
+  // const [processValue, setProcessValue] = useState<number>(0);
   const [uploadedSize, setUploadedSize] = useState<number>(0);
 
-  useEffect(() => {
-    setProcessValue(uploadedSize);
-    console.log("rendered", processValue);
-  }, [uploadedSize, processValue]);
+  // useEffect(() => {
+  //   setProcessValue(uploadedSize);
+
+  // }, [uploadedSize, processValue]);
+
+  console.log("rendered", uploadedSize, processMax);
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files && e.target.files[0];
@@ -86,11 +88,8 @@ function MainPage() {
     });
 
     try {
-      const uploadedResult = await axios.post(
-        "http://localhost:3000/api/upload",
-        formData
-      );
-      console.log(uploadedResult, "--uploadedResult");
+      const uploadedResult = await axios.post("/api/upload", formData);
+      // console.log(uploadedResult, "--uploadedResult");
       setUploadedSize((prevSize) => prevSize + chunk.size);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -116,18 +115,26 @@ function MainPage() {
 
       await uploadFileChunk(file, fileName, 0);
 
-      alert("Uploaded successfully!");
+      // alert("Uploaded successfully!");
       setFile(null);
-      setProcessValue(0);
-      setProcessMax(100);
+      // setProcessValue(0);
+      // setProcessMax(100);
       return;
     }
   }
 
+  const processPercents = Number(
+    ((uploadedSize * 100) / processMax).toFixed(2)
+  );
+
   return (
     <div className="container mx-auto w-full max-w-sm items-center space-y-8 mt-8">
-      {processValue > 0 && <Progress value={processValue} max={processMax} />}
-
+      {processPercents > 0 && (
+        <>
+          <Progress value={processPercents} />
+          {processPercents} %
+        </>
+      )}
       <div className="grid w-full max-w-sm items-center gap-4">
         <Label htmlFor="video">Upload Video</Label>
         <Input id="video" type="file" onChange={handleFileChange} />
