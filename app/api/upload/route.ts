@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
     writeFileSync(filePath, Buffer.from(fileData));
     return NextResponse.json({ message: "File is created" });
-  } catch (e) {
-    return NextResponse.json({ e, message: "Final catch error" });
+  } catch (error) {
+    return NextResponse.json({ error, message: "Final catch error" });
   }
 }
