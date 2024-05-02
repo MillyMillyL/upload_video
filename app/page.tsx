@@ -1,11 +1,12 @@
 "use client";
 import { z } from "zod";
 import axios from "axios";
+import { ChangeEvent, useEffect, useState } from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChangeEvent, useEffect, useState } from "react";
 
 const fileSchema = z.object({
   name: z.string(),
@@ -44,6 +45,8 @@ function createFormData({
 }
 
 function MainPage() {
+  noStore();
+
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [processMax, setProcessMax] = useState<number>(100);
@@ -114,8 +117,10 @@ function MainPage() {
       await uploadFileChunk(file, fileName, 0);
 
       alert("Uploaded successfully!");
+      setFile(null);
       setProcessValue(0);
       setProcessMax(100);
+      return;
     }
   }
 
