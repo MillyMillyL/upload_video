@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const filePath = join("D:/upload/", fileName as string);
+  const filePath = resolve(__dirname, fileName as string);
 
   console.log(
     uploadedSize,
