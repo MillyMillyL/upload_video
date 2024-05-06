@@ -34,21 +34,30 @@ export async function POST(req: NextRequest) {
   try {
     if (Number(uploadedSize) !== 0) {
       if (!existsSync(filePath)) {
-        return NextResponse.json({
-          message: "No file exists",
-        });
+        return NextResponse.json(
+          {
+            message: "No file exists",
+          },
+          { status: 400 }
+        );
       }
 
       appendFileSync(filePath, Buffer.from(fileData));
 
-      return NextResponse.json({
-        message: "Appended",
-        video_url: "http://localhost:3000/" + fileName,
-      });
+      return NextResponse.json(
+        {
+          message: "Appended",
+          video_url: "http://localhost:3000/" + fileName,
+        },
+        { status: 201 }
+      );
     }
     writeFileSync(filePath, Buffer.from(fileData));
-    return NextResponse.json({ message: "File is created" });
+    return NextResponse.json(
+      { message: "File is created", code: 204 },
+      { status: 201 }
+    );
   } catch (error) {
-    return NextResponse.json({ code: "500", message: "Internal Server Error" });
+    return NextResponse.json({ code: 500, message: "Internal Server" });
   }
 }

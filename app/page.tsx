@@ -80,9 +80,14 @@ function MainPage() {
     });
 
     try {
-      const uploadedResult = await axios.post("/api/upload", formData);
-      if (uploadedResult.data.error) return;
-      console.log(uploadedResult, "--uploadedResult");
+      const uploadedResult = await fetch("/api/upload", {
+        method: "post",
+        body: formData,
+      });
+
+      if (!uploadedResult.ok) return;
+      console.log(uploadedResult, "uploadedResult.data.code");
+      // console.log(uploadedResult, "--uploadedResult");
       setUploadedSize((prevSize) => prevSize + chunk.size);
     } catch (error) {
       console.error("Error uploading file:", error);
